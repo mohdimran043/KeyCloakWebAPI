@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using KeyCloak.Helper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +24,16 @@ namespace KeyCloak
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            //services.AddAuthorization(options =>
+            //{
 
+            //    options.AddPolicy("CanAccessMobileApp", policy => policy.RequireRole("CanAccessMobileApp"));
+            //});
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanAccessApp", policy =>
+                    policy.Requirements.Add(new CanAccessApp()));
+            });
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,6 +62,8 @@ namespace KeyCloak
                     }
                 };
             });
+            services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

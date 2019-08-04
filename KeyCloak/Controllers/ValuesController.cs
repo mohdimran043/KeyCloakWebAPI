@@ -15,7 +15,7 @@ namespace KeyCloak.Controllers
 
         }
 
-        [Authorize]
+        [Authorize(Policy  = "CanAccessApp")]
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
