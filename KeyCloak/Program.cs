@@ -10,19 +10,25 @@ using Microsoft.Extensions.Logging;
 
 namespace KeyCloak
 {
-    
-//{
-// 'client_id': 'demo-app',
-//    'username': 'imu1',
-//    'password': 'admin',
-//'grant_type': 'password'
-//,'client_secret':''
 
-//}
+    //{
+    // 'client_id': 'demo-app',
+    //    'username': 'imu1',
+    //    'password': 'admin',
+    //'grant_type': 'password'
+    //,'client_secret':''
+
+    //}
+    //http://localhost:3000/api/values
+    //http://localhost:8080/auth/realms/master/protocol/openid-connect/token
+
+    //Approach 2 
+    // CALL THE BELOW URL IN POSTMAN AND SPECIFY "AUTHORIZATION" as "BEARER" AND THEN CLICK ON PREVIEW
+    // COPY THE ID_TOKEN FROM THE ANGULAR APP(f12 and copy) AND CALL THE CODE 
+    // IT SHOULD RETURN THE RESULT
+    //http://localhost:3000/api/values
 
 
-//http://localhost:50883/api/values
-//http://localhost:8080/auth/realms/master/protocol/openid-connect/token
     public class Program
     {
         public static void Main(string[] args)

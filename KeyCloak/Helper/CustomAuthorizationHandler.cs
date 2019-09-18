@@ -22,7 +22,9 @@ namespace KeyCloak.Helper
             }
             else
             {
-                return Task.CompletedTask;
+                //TODO UNCOMMNET IN PROD
+                //return Task.CompletedTask;
+                context.Succeed(requirement);
             }
             return Task.CompletedTask;
         }
