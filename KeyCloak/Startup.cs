@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace KeyCloak
 {
@@ -28,16 +30,16 @@ namespace KeyCloak
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddAuthorization(options =>
-            {
+            //services.AddAuthorization(options =>
+            //{
 
-                options.AddPolicy("CanAccessMobileApp", policy => policy.RequireRole("CanAccessMobileApp"));
-            });
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("CanAccessApp", policy =>
-                    policy.Requirements.Add(new CanAccessApp()));
-            });
+            //    options.AddPolicy("CanAccessMobileApp", policy => policy.RequireRole("CanAccessMobileApp"));
+            //});
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("CanAccessApp", policy =>
+            //        policy.Requirements.Add(new CanAccessApp()));
+            //});
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,7 +50,15 @@ namespace KeyCloak
                 o.Authority = Configuration["Jwt:Authority"];
                 o.Audience = Configuration["Jwt:Audience"];
                 o.RequireHttpsMetadata = false;
-
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("fbe4cece-c106-40e4-8e71-06b3c8d7fda9")),
+                    ValidIssuer = "http://keycloak.microshit.org:8080/auth/realms/microshit.org",
+                    ValidAudience = "my-app",
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>
@@ -66,7 +76,7 @@ namespace KeyCloak
                     }
                 };
             });
-            services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+           // services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
 
 
             //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -104,7 +114,16 @@ namespace KeyCloak
             }
 
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Home", action = "Index" });
+            });
         }
     }
 }
