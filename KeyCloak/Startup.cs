@@ -43,22 +43,23 @@ namespace KeyCloak
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;                
 
             }).AddJwtBearer(o =>
             {
-                o.Authority = Configuration["Jwt:Authority"];
-                o.Audience = Configuration["Jwt:Audience"];
+                o.Authority = "http://keycloak.microshit.org:8080/auth/realms/microshit.org";
+                o.Audience = "my-app";                
                 o.RequireHttpsMetadata = false;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("fbe4cece-c106-40e4-8e71-06b3c8d7fda9")),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("fbe4cece-c106-40e4-8e71-06b3c8d7fda9")),                    
                     ValidIssuer = "http://keycloak.microshit.org:8080/auth/realms/microshit.org",
-                    ValidAudience = "my-app",
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
+                    ValidAudience = "account",                    
+                    ValidateIssuer = true,
+                    RequireSignedTokens = true,
+                    ValidateAudience = true
+                };                
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>
@@ -76,7 +77,7 @@ namespace KeyCloak
                     }
                 };
             });
-           // services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+            // services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
 
 
             //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
